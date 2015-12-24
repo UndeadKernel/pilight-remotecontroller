@@ -56,6 +56,10 @@ class RemoteController(Daemon):
         self.buttons.append(Button('prev', 7, 4, u'off', 2))
         self.buttons.append(Button('sleep', 7, 2, u'on', 8))
 
+    def playSound(self):
+        subprocess.Popen(['/usr/bin/mpg123', '/home/mpd/scripts/beep.mp3'], stdout=devnull, stderr=devnull);
+        print 'Play beep'
+
     def execLine(self, line):
         try:
             obj = json.loads(line)
@@ -67,9 +71,11 @@ class RemoteController(Daemon):
         if button == 'play':
             # Play music
             subprocess.call(['/usr/bin/mpc', 'play'], stdout=devnull, stderr=devnull);
+            self.playSound();
         elif button == 'stop':
             # Stop music
             subprocess.call(['/usr/bin/mpc', 'stop'], stdout=devnull, stderr=devnull);
+            self.playSound();
         elif button == 'next':
             # Skip track
             subprocess.call(['/usr/bin/mpc', 'next'], stdout=devnull, stderr=devnull);
@@ -80,6 +86,8 @@ class RemoteController(Daemon):
             # Set a sleep timer of 45 minutes
             t = Timer(2700, self.goToSleep)
             t.start()
+            self.playSound();
+            print 'Sleep.'
 
     def matchButton(self, obj):
         for button in self.buttons:
